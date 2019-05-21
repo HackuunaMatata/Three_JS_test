@@ -17,28 +17,21 @@ const camera2 = new THREE.PerspectiveCamera(
   45, 200 / 200, 0.01, 2000 );
 camera2.up = camera.up;
 
-const renderer = new THREE.WebGLRenderer();
+// {antialias: true} for beautiful displaying
+const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 container.appendChild( renderer.domElement );
 
-const renderer2 = new THREE.WebGLRenderer();
+const renderer2 = new THREE.WebGLRenderer({antialias: true});
 renderer2.setClearColor( 0xf0f0f0, 1 );
 renderer2.setSize( 200, 200 );
 container2.appendChild( renderer2.domElement );
 
 const loadingManager = new THREE.LoadingManager();
 const objLoader = new THREE.OBJLoader(loadingManager);
-objLoader.load('src/Tree.obj', (object) => {
-  object.scale.x = 0.3;
-  object.scale.y = 0.3;
-  object.scale.z = 0.3;
-  object.rotation.x = -Math.PI / 2;
-  object.position.y = -30;
-  scene.add(object);
-});
 
-const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+const ambient = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambient);
 
 const directionLight = new THREE.DirectionalLight(0xffffff);
@@ -51,6 +44,7 @@ scene.add( axesHelper );
 const axes2 = new THREE.AxisHelper( 100 );
 scene2.add( axes2 );
 
+/*
 // const localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5  ).negate();
 const localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5 );
 // renderer.clippingPlanes = [ localPlane ];
@@ -70,6 +64,7 @@ scene.add( plane );
 plane.position.x = -5;
 plane.position.y = -2;
 plane.position.z = -3.5;
+*/
 
 
 function render() {
@@ -80,7 +75,8 @@ function render() {
 
 render();
 
-const controls = new OrbitControls(camera);
+// renderer.domElement for enabling editing inputs
+const controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
 function animate() {
@@ -96,3 +92,63 @@ function animate() {
 }
 
 animate();
+
+
+// working with form
+
+let fileURL;
+const inputElement = document.getElementById('file');
+inputElement.addEventListener('change', handleFiles, false);
+function handleFiles() {
+  const fileObj = this.files[0];
+  fileURL = window.URL.createObjectURL(fileObj);
+}
+
+let prevObjName;
+const settingsForm = document.getElementById('settings-form');
+settingsForm.addEventListener('submit', applySettings);
+
+let scale;
+let positionX;
+let positionY;
+let positionZ;
+let rotationX;
+let rotationY;
+let rotationZ;
+
+function applySettings(e) {
+  e.preventDefault();
+
+  scale = +this.elements['scale'].value || 1;
+
+  positionX = this.elements['positionX'].value || 0;
+  positionY = this.elements['positionY'].value || 0;
+  positionZ = this.elements['positionZ'].value || 0;
+
+  rotationX = this.elements['rotationX'].value || 0;
+  rotationY = this.elements['rotationY'].value || 0;
+  rotationZ = this.elements['rotationZ'].value || 0;
+
+  fileURL && objLoader.load(fileURL, (object) => {
+
+    // need to clean up previous object
+    prevObjName && scene.remove(scene.getObjectByName(prevObjName));
+    object.name = fileURL;
+    prevObjName = fileURL;
+
+    object.scale.x = scale;
+    object.scale.y = scale;
+    object.scale.z = scale;
+
+    object.position.x = positionX;
+    object.position.y = positionY;
+    object.position.z = positionZ;
+
+    object.rotation.x = rotationX * Math.PI;
+    object.rotation.y = rotationY * Math.PI;
+    object.rotation.z = rotationZ * Math.PI;
+
+    scene.add(object);
+    render();
+  });
+}
