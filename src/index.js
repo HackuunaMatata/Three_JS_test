@@ -97,10 +97,11 @@ animate();
 // working with form
 
 let fileURL;
+let fileObj;
 const inputElement = document.getElementById('file');
 inputElement.addEventListener('change', handleFiles, false);
 function handleFiles() {
-  const fileObj = this.files[0];
+  fileObj = this.files[0];
   fileURL = window.URL.createObjectURL(fileObj);
 }
 
@@ -133,8 +134,8 @@ function applySettings(e) {
 
     // need to clean up previous object
     prevObjName && scene.remove(scene.getObjectByName(prevObjName));
-    object.name = fileURL;
-    prevObjName = fileURL;
+    object.name = 'model';
+    prevObjName = object.name;
 
     object.scale.x = scale;
     object.scale.y = scale;
