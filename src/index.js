@@ -44,29 +44,6 @@ scene.add( axesHelper );
 const axes2 = new THREE.AxisHelper( 100 );
 scene2.add( axes2 );
 
-/*
-// const localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5  ).negate();
-const localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5 );
-// renderer.clippingPlanes = [ localPlane ];
-// renderer.localClippingEnabled = true;
-
-
-var geometry = new THREE.PlaneGeometry( 70, 70 );
-geometry.lookAt(new THREE.Vector3( 1, 0.4, 0.7 ));
-var material = new THREE.MeshBasicMaterial( {
-  color: 0xffff00,
-  side: THREE.DoubleSide,
-  // opacity: 0.3,
-  transparent: true,
-} );
-var plane = new THREE.Mesh( geometry, material );
-scene.add( plane );
-plane.position.x = -5;
-plane.position.y = -2;
-plane.position.z = -3.5;
-*/
-
-
 function render() {
   requestAnimationFrame(render);
   renderer.render(scene, camera);
