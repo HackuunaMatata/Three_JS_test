@@ -197,6 +197,11 @@ function applyPlaneSettings(e) {
   e.preventDefault();
 
   let localPlane;
+  let constant;
+  let normalX;
+  let normalY;
+  let normalZ;
+  
   scene.getObjectByName('plane') && scene.remove(scene.getObjectByName('plane'));
   let geometry = new THREE.PlaneGeometry( 70, 70 );
   let material = new THREE.MeshBasicMaterial( {
@@ -210,20 +215,37 @@ function applyPlaneSettings(e) {
   scene.add( plane );
 
   if (chosen === 'Normal and constant') {
-    let constant = this.elements['constant'].value;
-    let normalX = this.elements['normalX'].value;
-    let normalY = this.elements['normalY'].value;
-    let normalZ = this.elements['normalZ'].value;
-
-    // localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5  ).negate();
-    localPlane = new THREE.Plane( new THREE.Vector3( normalX, normalY, normalZ ), constant );
-    // renderer.clippingPlanes = [ localPlane ];
-    // renderer.localClippingEnabled = true;
-
-    geometry.lookAt(new THREE.Vector3( normalX, normalY, normalZ ));
-
-    plane.position.x = -(normalX * constant);
-    plane.position.y = -(normalY * constant);
-    plane.position.z = -(normalZ * constant);
+    constant = this.elements['constant'].value;
+    normalX = this.elements['normalX'].value;
+    normalY = this.elements['normalY'].value;
+    normalZ = this.elements['normalZ'].value;
   }
+
+  if (chosen === 'Coordinates') {
+    let x1 = this.elements['x'].value;
+    let y2 = this.elements['y'].value;
+    let z3 = this.elements['z'].value;
+
+    let a = y2 * z3;
+    let b = x1 * z3;
+    let c = y2 * x1;
+    let d = -x1 * y2 * z3;
+
+    let divider = Math.sqrt(a * a + b * b + c * c);
+
+    normalX = a / divider;
+    normalY = b / divider;
+    normalZ = c / divider;
+    constant = d / divider;
+  }
+
+  localPlane = new THREE.Plane( new THREE.Vector3( normalX, normalY, normalZ ), constant );
+  // renderer.clippingPlanes = [ localPlane ];
+  // renderer.localClippingEnabled = true;
+
+  geometry.lookAt(new THREE.Vector3( normalX, normalY, normalZ ));
+
+  plane.position.x = -(normalX * constant);
+  plane.position.y = -(normalY * constant);
+  plane.position.z = -(normalZ * constant);
 }
