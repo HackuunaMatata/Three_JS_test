@@ -203,7 +203,7 @@ function applyPlaneSettings(e) {
   let normalZ;
 
   scene.getObjectByName('plane') && scene.remove(scene.getObjectByName('plane'));
-  let geometry = new THREE.PlaneGeometry( 70, 70 );
+  let geometry = new THREE.PlaneGeometry( 100, 100 );
   let material = new THREE.MeshBasicMaterial( {
     color: 0xffff00,
     side: THREE.DoubleSide,
