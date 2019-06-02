@@ -153,3 +153,77 @@ function applySettings(e) {
     render();
   });
 }
+
+
+// planes
+
+let chosen;
+
+function selected() {
+  chosen = this.value;
+  const paramsForNormalAndConst = document.getElementById('paramsForNormalAndConst');
+  const paramsForCoordinates = document.getElementById('paramsForCoordinates');
+  const paramsForEquation = document.getElementById('paramsForEquation');
+
+  if (chosen === 'Normal and constant') {
+    paramsForNormalAndConst.style.display = 'block';
+    paramsForCoordinates.style.display = 'none';
+    paramsForEquation.style.display = 'none';
+    return;
+  }
+
+  if (chosen === 'Coordinates') {
+    paramsForNormalAndConst.style.display = 'none';
+    paramsForCoordinates.style.display = 'block';
+    paramsForEquation.style.display = 'none';
+    return;
+  }
+
+  if (chosen === 'Equation') {
+    paramsForNormalAndConst.style.display = 'none';
+    paramsForCoordinates.style.display = 'none';
+    paramsForEquation.style.display = 'block';
+    return;
+  }
+}
+
+const radios = document.getElementsByName("plane");
+radios.forEach(elem => elem.addEventListener('change', selected));
+
+const planeForm = document.getElementById('plane-form');
+planeForm.addEventListener('submit', applyPlaneSettings);
+
+function applyPlaneSettings(e) {
+  e.preventDefault();
+
+  let localPlane;
+  scene.getObjectByName('plane') && scene.remove(scene.getObjectByName('plane'));
+  let geometry = new THREE.PlaneGeometry( 70, 70 );
+  let material = new THREE.MeshBasicMaterial( {
+    color: 0xffff00,
+    side: THREE.DoubleSide,
+    // opacity: 0.3,
+    transparent: true,
+  } );
+  let plane = new THREE.Mesh( geometry, material );
+  plane.name = 'plane';
+  scene.add( plane );
+
+  if (chosen === 'Normal and constant') {
+    let constant = this.elements['constant'].value;
+    let normalX = this.elements['normalX'].value;
+    let normalY = this.elements['normalY'].value;
+    let normalZ = this.elements['normalZ'].value;
+
+    // localPlane = new THREE.Plane( new THREE.Vector3( 1, 0.4, 0.7 ), 5  ).negate();
+    localPlane = new THREE.Plane( new THREE.Vector3( normalX, normalY, normalZ ), constant );
+    // renderer.clippingPlanes = [ localPlane ];
+    // renderer.localClippingEnabled = true;
+
+    geometry.lookAt(new THREE.Vector3( normalX, normalY, normalZ ));
+
+    plane.position.x = -(normalX * constant);
+    plane.position.y = -(normalY * constant);
+    plane.position.z = -(normalZ * constant);
+  }
+}
