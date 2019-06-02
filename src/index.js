@@ -201,7 +201,7 @@ function applyPlaneSettings(e) {
   let normalX;
   let normalY;
   let normalZ;
-  
+
   scene.getObjectByName('plane') && scene.remove(scene.getObjectByName('plane'));
   let geometry = new THREE.PlaneGeometry( 70, 70 );
   let material = new THREE.MeshBasicMaterial( {
@@ -230,6 +230,20 @@ function applyPlaneSettings(e) {
     let b = x1 * z3;
     let c = y2 * x1;
     let d = -x1 * y2 * z3;
+
+    let divider = Math.sqrt(a * a + b * b + c * c);
+
+    normalX = a / divider;
+    normalY = b / divider;
+    normalZ = c / divider;
+    constant = d / divider;
+  }
+
+  if (chosen === 'Equation') {
+    let a = this.elements['a'].value;
+    let b = this.elements['b'].value;
+    let c = this.elements['c'].value;
+    let d = this.elements['d'].value;
 
     let divider = Math.sqrt(a * a + b * b + c * c);
 
